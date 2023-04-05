@@ -21,8 +21,12 @@ export class VideoService {
   async checkVideoLink(checkUrlDto: CheckUrlDto) {
     try {
       new URL(checkUrlDto.videoAddress);
+      const URLWithoutQueryStrings = checkUrlDto.videoAddress
+        .toString()
+        .split('&')[0];
+
       const downloadLink = await this.generateVideoLink(
-        `yt-dlp -f best*[vcodec!=none][acodec!=none]  ${checkUrlDto.videoAddress} -g`,
+        `yt-dlp -f best*[vcodec!=none][acodec!=none]  -g ${URLWithoutQueryStrings} `,
       );
       return {
         URL: downloadLink,
