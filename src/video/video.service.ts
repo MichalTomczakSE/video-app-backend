@@ -25,7 +25,7 @@ export class VideoService {
         .toString()
         .split('&')[0];
       const [title, videoURL, thumbnail, duration] = await Promise.all([
-        this.runCommand(`chcp 65001 && yt-dlp ${URLWithoutQueryStrings} --get-title`),
+        this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
         this.runCommand(
           `yt-dlp -f best*[vcodec!=none][acodec!=none] ${URLWithoutQueryStrings} -g`,
         ),
