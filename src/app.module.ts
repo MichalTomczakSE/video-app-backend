@@ -5,11 +5,9 @@ import { VideoController } from './video/video.controller';
 import { VideoService } from './video/video.service';
 import { VideoModule } from './video/video.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { config } from '../ormconfig';
-
+import { config } from '../ormconfig'
 @Module({
-  imports: [TypeOrmModule.forRoot(config), VideoModule],
+  imports: [TypeOrmModule.forRoot(config), VideoModule, MailModule],
   controllers: [AppController, VideoController],
   providers: [AppService, VideoService],
 })
