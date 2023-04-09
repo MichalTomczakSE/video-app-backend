@@ -9,5 +9,6 @@ export const config: TypeOrmModuleOptions = {
   entities: ['dist/**/**.entity{.ts,.js}'],
   bigNumberStrings: false,
   logging: true,
-  migrations: ['dist/migration/*.js'],
+  synchronize: true,
+  // migrations: ['dist/migration/*.js'],
 };
