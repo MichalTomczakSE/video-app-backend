@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 
 @Injectable()
 export class VideoService {
-  async generateVideoLink(command: string): Promise<string> {
+  async runCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -21,11 +21,23 @@ export class VideoService {
   async checkVideoLink(checkUrlDto: CheckUrlDto) {
     try {
       new URL(checkUrlDto.videoAddress);
-      const downloadLink = await this.generateVideoLink(
-        `yt-dlp -f best*[vcodec!=none][acodec!=none]  ${checkUrlDto.videoAddress} -g`,
-      );
+      const URLWithoutQueryStrings = checkUrlDto.videoAddress
+        .toString()
+        .split('&')[0];
+      const [title, videoURL, thumbnail, duration] = await Promise.all([
+        this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
+        this.runCommand(
+          `yt-dlp -f best*[vcodec!=none][acodec!=none] ${URLWithoutQueryStrings} -g`,
+        ),
+        this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-thumbnail`),
+        this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-duration`),
+      ]);
+
       return {
-        URL: downloadLink,
+        title,
+        videoURL,
+        thumbnail,
+        duration,
         valid: true,
       };
     } catch (error) {
@@ -36,3 +48,5 @@ export class VideoService {
     }
   }
 }
+
+//@TODO Create validation for TVP info videos (download direct-x file) ;
