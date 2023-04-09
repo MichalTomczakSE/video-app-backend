@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { MailService } from '../mail/mail.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -12,23 +13,43 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @Inject(MailService) private mailService: MailService,
   ) {}
-
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const existingUser = await this.findOneByUsername(createUserDto.username);
+    if (existingUser) {
+      throw new BadRequestException('Username already exists');
+    }
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    createUserDto.password = hashedPassword;
     const newUser = this.usersRepository.create(createUserDto);
-    await this.mailService.sendMail(
-      'test@mail.com',
-      'added to cart',
-      'thank you!',
-    );
     return this.usersRepository.save(newUser);
+  }
+
+  async validatePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    console.log(plainPassword, hashedPassword);
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async validateUser(username: string, password: string): Promise<User | null> {
+    const user = await this.findOneByUsername(username);
+    console.log('Fetched user:', user);
+    if (user && (await this.validatePassword(password, user.password))) {
+      return user;
+    }
+    return null;
   }
 
   findAll() {
     return this.usersRepository.find();
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOneBy({ id });
+  findOne(userId: string) {
+    return this.usersRepository.findOneBy({ userId });
+  }
+  findOneByUsername(username: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ username });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
