@@ -27,7 +27,7 @@ export class VideoService {
       const [title, videoURL, thumbnail, duration] = await Promise.all([
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
         this.runCommand(
-          `yt-dlp -f best*[vcodec!=none][acodec!=none] ${URLWithoutQueryStrings} -g`,
+          `yt-dlp -f -b ${URLWithoutQueryStrings} -g`,
         ),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-thumbnail`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-duration`),
