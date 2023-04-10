@@ -26,9 +26,7 @@ export class VideoService {
         .split('&')[0];
       const [title, videoURL, thumbnail, duration] = await Promise.all([
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
-        this.runCommand(
-          `yt-dlp -f -b ${URLWithoutQueryStrings} -g`,
-        ),
+        this.runCommand(`yt-dlp -f b ${URLWithoutQueryStrings} -g`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-thumbnail`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-duration`),
       ]);
@@ -48,5 +46,3 @@ export class VideoService {
     }
   }
 }
-
-//@TODO Create validation for TVP info videos (download direct-x file) ;
