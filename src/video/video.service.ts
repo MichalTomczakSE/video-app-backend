@@ -46,5 +46,3 @@ export class VideoService {
     }
   }
 }
-
-//@TODO Create validation for TVP info videos (download direct-x file) ;

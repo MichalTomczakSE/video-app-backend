@@ -28,13 +28,11 @@ export class UsersService {
     plainPassword: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    console.log(plainPassword, hashedPassword);
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
   async validateUser(username: string, password: string): Promise<User | null> {
     const user = await this.findOneByUsername(username);
-    console.log('Fetched user:', user);
     if (user && (await this.validatePassword(password, user.password))) {
       return user;
     }
