@@ -36,7 +36,7 @@ export class AuthController {
       maxAge: 60 * 60 * 1000,
     });
     return {
-      message: 'Login successful!',
+      message: `Welcome ${jwt.name}!`,
       access_token: jwt.access_token,
     };
   }
