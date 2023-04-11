@@ -9,4 +9,5 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(8)
   password: string;
+  currentTokenId: string;
 }

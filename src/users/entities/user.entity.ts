@@ -12,5 +12,5 @@ export class User {
   @Column({ length: 64 })
   password: string;
   @Column()
-  isVerified: boolean;
+  currentTokenId: string;
 }
