@@ -29,11 +29,10 @@ export class AuthController {
   async login(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
+  ): Promise<{ message: string; access_token: string }> {
     const jwt = await this.authService.login(req.user as User);
     res.cookie('access_token', jwt.access_token, {
       httpOnly: true,
-      maxAge: 60 * 60 * 1000,
     });
     return {
       message: `Welcome ${jwt.name}!`,
