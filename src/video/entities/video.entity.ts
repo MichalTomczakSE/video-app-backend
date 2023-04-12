@@ -6,13 +6,13 @@ export class VideoEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 1028 })
   videoUrl: string;
 
   @Column()
   title: string;
 
-  @Column()
+  @Column({ length: 1028 })
   thumbnailUrl: string;
   @Column()
   duration: string;
