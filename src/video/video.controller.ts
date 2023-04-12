@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { GenerateVideoDto } from './dto/generate-video.dto';
 import { VideoService } from './video.service';
+import { CheckUrlDto } from './dto/checkUrl-dto';
 
 @Controller('video')
 export class VideoController {
@@ -10,9 +11,8 @@ export class VideoController {
   getRecentVideos() {
     return this.videoService.showRecent();
   }
-
   @Post('/')
-  checkVideoLink(@Body() generateVideoDto: GenerateVideoDto) {
-    return this.videoService.checkVideoLink(generateVideoDto);
+  checkVideoLink(@Body() checkUrlDto: CheckUrlDto) {
+    return this.videoService.checkVideoLink(checkUrlDto);
   }
 }
