@@ -19,4 +19,6 @@ export class VideoEntity {
 
   @ManyToOne(() => User, (user) => user.videos)
   user: User;
+  @Column({ type: 'timestamp' })
+  date_time_with_timezone: Date;
 }

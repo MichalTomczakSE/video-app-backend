@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { GenerateVideoDto } from './dto/generate-video.dto';
 import { exec } from 'child_process';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VideoEntity } from './entities/video.entity';
 import { Repository } from 'typeorm';
+import { CheckUrlDto } from './dto/checkUrl-dto';
 
 @Injectable()
 export class VideoService {
@@ -25,28 +25,27 @@ export class VideoService {
     });
   }
 
-  async checkVideoLink(generateVideoDto: GenerateVideoDto) {
+  async checkVideoLink(checkUrlDto: CheckUrlDto) {
     try {
-      const URLWithoutQueryStrings = generateVideoDto.videoAddress
+      const URLWithoutQueryStrings = checkUrlDto.videoAddress
         .toString()
         .split('&')[0];
-      const [title, videoAddress, thumbnailUrl, duration] = await Promise.all([
+      const [title, videoUrl, thumbnail, duration] = await Promise.all([
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
         this.runCommand(`yt-dlp -f b ${URLWithoutQueryStrings} -g`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-thumbnail`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-duration`),
       ]);
-      const videoData = {
+      await this.videoRepository.save({
         title,
-        videoUrl: videoAddress,
-        thumbnailUrl,
+        thumbnailUrl: thumbnail,
         duration,
-      };
-      await this.videoRepository.save(videoData);
+        videoUrl,
+      });
       return {
         title,
-        videoAddress,
-        thumbnailUrl,
+        videoUrl,
+        thumbnail,
         duration,
         valid: true,
       };
@@ -56,5 +55,11 @@ export class VideoService {
           'Provided link is invalid, or doesnt contain video. Please try again with valid URL address.',
       };
     }
+  }
+
+  async showRecent() {
+    return this.videoRepository.createQueryBuilder('VideoEntity')    .orderBy('VideoEntity.date_time_with_timezone', 'DESC')
+      .take(10)
+      .getMany();
   }
 }

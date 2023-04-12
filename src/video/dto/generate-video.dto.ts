@@ -2,7 +2,7 @@ import { IsUrl } from 'class-validator';
 
 export class GenerateVideoDto {
   @IsUrl()
-  videoAddress: string;
+  videoAddress: URL;
   @IsUrl()
   thumbnailUrl: string;
   title: string;

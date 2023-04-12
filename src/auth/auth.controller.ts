@@ -12,8 +12,7 @@ import {
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 
@@ -47,10 +46,5 @@ export class AuthController {
     const createdUser = await this.usersService.create(createUserDto);
     const { password, ...userWithoutPassword } = createdUser;
     return userWithoutPassword;
-  }
-  @UseGuards(JwtAuthGuard)
-  @Get('/profile')
-  getProfile(@Req() req: Request) {
-    return req.user;
   }
 }
