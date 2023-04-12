@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @Inject(MailService) private mailService: MailService,
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.findOneByUsername(createUserDto.username);
     if (existingUser) {
@@ -28,26 +29,21 @@ export class UsersService {
     plainPassword: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    console.log(plainPassword, hashedPassword);
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
   async validateUser(username: string, password: string): Promise<User | null> {
     const user = await this.findOneByUsername(username);
-    console.log('Fetched user:', user);
     if (user && (await this.validatePassword(password, user.password))) {
       return user;
     }
     return null;
   }
 
-  findAll() {
-    return this.usersRepository.find();
-  }
-
   findOne(userId: string) {
     return this.usersRepository.findOneBy({ userId });
   }
+
   findOneByUsername(username: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ username });
   }
