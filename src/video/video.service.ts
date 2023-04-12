@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CheckUrlDto } from './dto/checkUrl.dto';
+import { GenerateVideoDto } from './dto/generate-video.dto';
 import { exec } from 'child_process';
+import { InjectRepository } from '@nestjs/typeorm';
+import { VideoEntity } from './entities/video.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class VideoService {
+  constructor(
+    @InjectRepository(VideoEntity)
+    private videoRepository: Repository<VideoEntity>,
+  ) {}
   async runCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
@@ -18,23 +25,28 @@ export class VideoService {
     });
   }
 
-  async checkVideoLink(checkUrlDto: CheckUrlDto) {
+  async checkVideoLink(generateVideoDto: GenerateVideoDto) {
     try {
-      new URL(checkUrlDto.videoAddress);
-      const URLWithoutQueryStrings = checkUrlDto.videoAddress
+      const URLWithoutQueryStrings = generateVideoDto.videoAddress
         .toString()
         .split('&')[0];
-      const [title, videoURL, thumbnail, duration] = await Promise.all([
+      const [title, videoAddress, thumbnailUrl, duration] = await Promise.all([
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-title`),
         this.runCommand(`yt-dlp -f b ${URLWithoutQueryStrings} -g`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-thumbnail`),
         this.runCommand(`yt-dlp ${URLWithoutQueryStrings} --get-duration`),
       ]);
-
+      const videoData = {
+        title,
+        videoUrl: videoAddress,
+        thumbnailUrl,
+        duration,
+      };
+      await this.videoRepository.save(videoData);
       return {
         title,
-        videoURL,
-        thumbnail,
+        videoAddress,
+        thumbnailUrl,
         duration,
         valid: true,
       };
@@ -46,5 +58,3 @@ export class VideoService {
     }
   }
 }
-
-//@TODO Create validation for TVP info videos (download direct-x file) ;
