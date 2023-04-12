@@ -38,11 +38,10 @@ export class VideoService {
       ]);
       const videoData = {
         title,
-        videoUrl: videoAddress,
+        videoAddress,
         thumbnailUrl,
         duration,
       };
-      await this.videoRepository.save(videoData);
       return {
         title,
         videoAddress,
@@ -56,5 +55,9 @@ export class VideoService {
           'Provided link is invalid, or doesnt contain video. Please try again with valid URL address.',
       };
     }
+  }
+
+  async showRecent() {
+    return 'console.log';
   }
 }

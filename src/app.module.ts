@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VideoController } from './video/video.controller';
-import { VideoService } from './video/video.service';
 import { VideoModule } from './video/video.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from '../ormconfig';
@@ -18,6 +17,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController, VideoController],
-  providers: [AppService, VideoService],
+  providers: [AppService],
 })
 export class AppModule {}

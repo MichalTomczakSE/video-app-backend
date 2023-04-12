@@ -13,6 +13,7 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @Inject(MailService) private mailService: MailService,
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.findOneByUsername(createUserDto.username);
     if (existingUser) {
@@ -39,13 +40,10 @@ export class UsersService {
     return null;
   }
 
-  findAll() {
-    return this.usersRepository.find();
-  }
-
   findOne(userId: string) {
     return this.usersRepository.findOneBy({ userId });
   }
+
   findOneByUsername(username: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ username });
   }
